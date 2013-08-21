@@ -363,6 +363,7 @@ NTSTATUS dcerpc_parse_binding(TALLOC_CTX *mem_ctx, const char *s, struct dcerpc_
 	}
 
 	b->target_hostname = b->host;
+    DEBUG(3,("Setting b->target_hostname to b->host=%s",b->host));
 
 	b->options = NULL;
 	b->flags = 0;
