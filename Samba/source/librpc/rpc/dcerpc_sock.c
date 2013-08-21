@@ -366,12 +366,18 @@ static void continue_ip_resolve_name(struct composite_context *ctx)
 						   struct pipe_tcp_state);
 	struct composite_context *sock_ipv4_req;
 
+    DEBUG(3,("entering continue_ip_resolve_name, about to call resolve_name_recv"));
+
 	c->status = resolve_name_recv(ctx, s, &s->address);
 	if (!composite_is_ok(c)) return;
+
+    DEBUG(3,("inside continue_ip_resolve_name, about to call socket_address_from_strings, s->address is %s",s->address));
 
 	/* prepare server address using host ip:port and transport name */
 	s->srvaddr = socket_address_from_strings(s->conn, "ipv4", s->address, s->port);
 	if (composite_nomem(s->srvaddr, c)) return;
+
+    DEBUG(3,("inside continue_ip_resolve_name, s->srvaddr is %s",s->srvaddr));
 
 	/* resolve_nbt_name gives only ipv4 ... - send socket open request */
 	sock_ipv4_req = dcerpc_pipe_open_socket_send(c, s->conn,
@@ -450,6 +456,8 @@ struct composite_context* dcerpc_pipe_open_tcp_send(struct dcerpc_connection *co
 						    const char *target_hostname,
 						    uint32_t port)
 {
+    DEBUG(3,("entering dcerpc_pipe_open_tcp_send with target_hostname=%s server=%s port=%d", target_hostname, server, port));
+
 	struct composite_context *c;
 	struct pipe_tcp_state *s;
 	struct composite_context *resolve_req;

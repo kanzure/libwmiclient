@@ -1112,6 +1112,13 @@ static void try_next_binding(struct composite_context *c,
 
         DEBUG(9, ("dcom_get_pipe: Trying binding %s\n", sb->NetworkAddr));
         status = dcerpc_binding_from_STRINGBINDING(s->iface->ctx, &binding, sb);
+
+        // Otherwise wmic will attempt to call sys_gethostbyname and fail if
+        // it's a remote machine not resolvable by /etc/hosts wins lmhost bcast
+        // etc... This is for dcerpc_pipe_connect_ncacn_ip_tcp_send.
+        binding->host = s->ox->host;
+        binding->target_hostname = s->ox->host;
+
         if (!NT_STATUS_IS_OK(status))
         {
             DEBUG(1, ("Error parsing string binding %s: %s\n", sb->NetworkAddr,
